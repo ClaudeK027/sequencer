@@ -1532,15 +1532,92 @@ body.live-fullscreen .state-chip {
   padding: 6px 14px;
 }
 
-/* Live page responsive */
+/* ==============================================
+   Live page — responsive (mobile et tablette)
+   ============================================== */
 @media (max-width: 767px) {
-  .live-page-header { padding: 12px 14px; gap: 8px; }
+  /* --- Header : compact, titre tronqué proprement --- */
+  .live-page-header {
+    padding: 10px 12px;
+    gap: 6px;
+  }
   .live-page-header h1 { font-size: 14px; }
   .live-counter { font-size: 11px; }
+  .live-page-header .btn.ghost {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+  .live-session-title {
+    font-size: 13px;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* --- Cartes de la liste live --- */
   .live-card { grid-template-columns: 1fr; gap: 10px; padding: 14px; }
   .live-card-status { display: flex; }
-  .live-card-join { width: 100%; }
-  .live-controls { padding: 14px; gap: 6px; }
+  .live-card-join { width: auto; }
+  .live-card-actions { width: 100%; justify-content: flex-end; }
+
+  /* --- Stage du timer : padding/gap réduits --- */
+  .live-stage {
+    padding: 16px 12px;
+    gap: 12px;
+  }
+  .live-stage .step-label {
+    font-size: 10px;
+    gap: 6px;
+  }
+
+  /* --- Planned-context : pilule réduite --- */
+  .planned-context {
+    padding: 5px 12px;
+    gap: 8px;
+  }
+  .planned-label { font-size: 10px; }
+  .planned-value { font-size: 16px; }
+
+  /* --- Global info : autorise le wrap au lieu d'overflow --- */
+  .global-info {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 10px;
+    font-size: 11px;
+  }
+
+  /* --- Contrôles : autorise le wrap + bouton "Étape suivante" en pleine
+         largeur sur sa propre ligne (action principale en mode contrôle) --- */
+  .live-controls {
+    flex-wrap: wrap;
+    padding: 12px;
+    gap: 8px;
+    justify-content: center;
+  }
   .btn.icon.lg { width: 44px; height: 44px; }
   .btn.icon.xl { width: 60px; height: 60px; }
+
+  .btn.next-step-btn {
+    flex-basis: 100%;          /* ligne dédiée */
+    order: 99;                  /* sous les boutons icônes */
+    height: 48px;
+    min-width: 0;
+    padding: 0 16px;
+    font-size: 14px;
+    margin-top: 4px;
+    border-radius: 24px;
+  }
+}
+
+/* --- Très petits écrans (< 480px) --- */
+@media (max-width: 479px) {
+  .btn.icon.lg { width: 40px; height: 40px; }
+  .btn.icon.xl { width: 56px; height: 56px; }
+  .live-stage { padding: 12px 8px; gap: 10px; }
+  .planned-value { font-size: 15px; }
+  .global-info { font-size: 10px; }
 }
