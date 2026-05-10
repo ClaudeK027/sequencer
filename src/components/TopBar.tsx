@@ -2,8 +2,7 @@ import { useRef } from 'react';
 import { useStore, useActiveSequence } from '../store';
 import { useToast } from './Toast';
 import { Icon } from './Icon';
-import type { BackupPayload } from '../types';
-import { importSequence, restoreSequencesBackup } from '../lib/sequenceActions';
+import { importSequence } from '../lib/sequenceActions';
 
 interface Props {
   onToggleFullscreen: () => void;
@@ -13,13 +12,11 @@ interface Props {
 export function TopBar({ onToggleFullscreen, onGoLive }: Props): JSX.Element {
   const soundEnabled = useStore((s) => s.soundEnabled);
   const toggleSound = useStore((s) => s.toggleSound);
-  const sequences = useStore((s) => s.sequences);
   const selectSequence = useStore((s) => s.selectSequence);
   const active = useActiveSequence();
   const toast = useToast();
 
   const importInput = useRef<HTMLInputElement>(null);
-  const restoreInput = useRef<HTMLInputElement>(null);
 
   const exportActive = (): void => {
     if (!active) return;
@@ -28,22 +25,6 @@ export function TopBar({ onToggleFullscreen, onGoLive }: Props): JSX.Element {
       steps: active.steps.map((s) => ({ name: s.name, duration: s.duration })),
     };
     downloadJson(payload, `${slug(active.name)}.json`);
-  };
-
-  const exportBackup = (): void => {
-    const payload: BackupPayload = {
-      type: 'sequence-timer-backup',
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      soundEnabled,
-      sequences: sequences.map((seq) => ({
-        name: seq.name,
-        updatedAt: seq.updatedAt,
-        steps: seq.steps.map((s) => ({ name: s.name, duration: s.duration })),
-      })),
-    };
-    downloadJson(payload, `sequencer-backup-${new Date().toISOString().slice(0, 10)}.json`);
-    toast.show(`Backup de ${sequences.length} séquence${sequences.length > 1 ? 's' : ''}`);
   };
 
   const handleImportFile = async (file: File): Promise<void> => {
@@ -58,25 +39,6 @@ export function TopBar({ onToggleFullscreen, onGoLive }: Props): JSX.Element {
       toast.show(`"${name}" importée`);
     } catch (err) {
       toast.show('Fichier JSON invalide : ' + (err as Error).message);
-    }
-  };
-
-  const handleRestoreFile = async (file: File): Promise<void> => {
-    try {
-      const text = await file.text();
-      const data: BackupPayload = JSON.parse(text);
-      if (data.type !== 'sequence-timer-backup' || !Array.isArray(data.sequences)) {
-        throw new Error('Format de backup invalide');
-      }
-      const ok = window.confirm(
-        `Restaurer ce backup ?\n\n${data.sequences.length} séquence(s) à importer.\nLes séquences actuelles (${sequences.length}) seront remplacées dans Supabase.`
-      );
-      if (!ok) return;
-      const n = await restoreSequencesBackup(data.sequences);
-      if (n === 0) throw new Error('Aucune séquence valide');
-      toast.show(`${n} séquence${n > 1 ? 's' : ''} restaurée${n > 1 ? 's' : ''}`);
-    } catch (err) {
-      toast.show('Backup invalide : ' + (err as Error).message);
     }
   };
 
@@ -129,23 +91,6 @@ export function TopBar({ onToggleFullscreen, onGoLive }: Props): JSX.Element {
         <span className="divider" />
         <button
           className="btn ghost"
-          onClick={() => restoreInput.current?.click()}
-          title="Restaurer un backup complet"
-          aria-label="Restaurer un backup complet"
-        >
-          <Icon name="restore" />
-        </button>
-        <button
-          className="btn ghost"
-          onClick={exportBackup}
-          title="Sauvegarder toutes les séquences"
-          aria-label="Sauvegarder toutes les séquences"
-        >
-          <Icon name="archive" />
-        </button>
-        <span className="divider" />
-        <button
-          className="btn ghost"
           onClick={toggleSound}
           title={soundEnabled ? 'Désactiver le son' : 'Activer le son'}
           aria-label={soundEnabled ? 'Désactiver le son' : 'Activer le son'}
@@ -168,17 +113,6 @@ export function TopBar({ onToggleFullscreen, onGoLive }: Props): JSX.Element {
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) void handleImportFile(file);
-            e.target.value = '';
-          }}
-        />
-        <input
-          ref={restoreInput}
-          type="file"
-          accept="application/json"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) void handleRestoreFile(file);
             e.target.value = '';
           }}
         />

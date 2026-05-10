@@ -30,6 +30,9 @@
   display: grid;
   grid-template-rows: 48px 1fr;
   height: 100vh;
+  /* iOS Safari : 100dvh suit dynamiquement la barre d'URL → bottom nav
+     toujours visible, pas de zone coupée */
+  height: 100dvh;
 }
 
 .topbar {
@@ -37,6 +40,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
   border-bottom: 1px solid var(--border);
   background: var(--bg-elevated);
 }
@@ -114,6 +119,8 @@
 .btn:active { background: var(--panel-active); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn:disabled:hover { background: var(--panel); border-color: var(--border); }
+/* Cible tactile minimale + suppression du highlight bleu iOS */
+.btn { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
 .btn.primary {
   background: var(--accent);
@@ -776,6 +783,16 @@ body.fullscreen .progress-track { max-width: 720px; height: 6px; }
   justify-content: flex-end;
   flex-wrap: wrap;
 }
+@media (max-width: 479px) {
+  /* Sur très petit écran, le bouton supprimer prend sa propre ligne en haut */
+  .report-actions .btn.danger-action {
+    margin-right: 0;
+    flex-basis: 100%;
+    order: -1;       /* en premier */
+    justify-content: center;
+  }
+  .report-actions .btn { flex: 1; }
+}
 
 .report-empty {
   display: flex;
@@ -889,12 +906,18 @@ body.fullscreen .progress-track { max-width: 720px; height: 6px; }
 }
 
 /* ==============================================
-   Responsive — < 480px : très petits écrans
+   Responsive — < 480px : très petits écrans (iPhone)
    ============================================== */
 @media (max-width: 479px) {
-  .topbar { padding: 0 8px; }
+  .topbar {
+    padding: 0 8px;
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
   .actions .divider { display: none; }
-  .btn.ghost { width: 32px; height: 32px; }
+  .actions { gap: 1px; }
+  /* Touch targets : 36px = compromis densité × accessibilité sur iPhone */
+  .topbar .btn.ghost { width: 36px; height: 36px; }
 
   .timer-stage { padding: 16px 12px; }
   .global-info {
@@ -934,7 +957,7 @@ body.fullscreen .app { grid-template-rows: 1fr; }
 .go-live-label { line-height: 1; }
 @media (max-width: 479px) {
   .go-live-label { display: none; }
-  .go-live-btn { width: 34px; padding: 0; }
+  .go-live-btn { width: 36px; height: 36px; padding: 0; }
 }
 
 /* ==============================================
@@ -971,7 +994,14 @@ body.fullscreen .app { grid-template-rows: 1fr; }
   justify-content: center;
   z-index: 200;
   padding: 24px;
+  /* iOS : prend en compte les safe-areas pour ne jamais déborder */
+  padding-top: max(24px, env(safe-area-inset-top));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
   animation: modal-fade 200ms ease-out;
+  overflow-y: auto;
+}
+@media (max-width: 479px) {
+  .modal-overlay { padding: 16px; }
 }
 @keyframes modal-fade {
   from { opacity: 0; }
@@ -987,7 +1017,9 @@ body.fullscreen .app { grid-template-rows: 1fr; }
   animation: modal-slide 220ms cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  /* Permet au body de la modal de scroller si trop de contenu (mode-picker) */
+  overflow: hidden;
 }
 @keyframes modal-slide {
   from { opacity: 0; transform: translateY(-12px) scale(0.98); }
@@ -1104,6 +1136,7 @@ body.fullscreen .app { grid-template-rows: 1fr; }
 .page-live-list,
 .page-live-session {
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bg);
@@ -1249,6 +1282,7 @@ body.fullscreen .app { grid-template-rows: 1fr; }
   justify-content: center;
   gap: 10px;
   padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
   border-top: 1px solid var(--border);
   background: var(--bg-elevated);
 }
@@ -1460,6 +1494,93 @@ body.live-fullscreen .step-progress-track {
   white-space: nowrap;
 }
 .report-table .overtime.positive { color: var(--danger); }
+
+/* ==============================================
+   Rapport — variantes desktop / mobile
+   ============================================== */
+.report-mobile-only { display: none; }
+
+@media (max-width: 767px) {
+  .report-desktop-only { display: none; }
+  .report-mobile-only { display: flex; }
+
+  .report-cards {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .report-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .report-card.unreached { opacity: 0.5; }
+
+  .report-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .report-card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-subtle);
+    flex-shrink: 0;
+  }
+  .report-card-title {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .report-card-body {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 12px;
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+  .report-card-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .report-card-key {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .report-card-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .report-card-val.strong { color: var(--text); }
+  .report-card-val.overtime.positive { color: var(--danger); }
+
+  .report-card-footer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-subtle);
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Padding plus tendu sur la zone rapport */
+  .report-mode .report-body { padding: 12px; }
+}
 
 /* ==============================================
    Live page — mode plein écran

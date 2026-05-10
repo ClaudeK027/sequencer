@@ -154,7 +154,8 @@ export function ReportView({ session }: Props): JSX.Element {
       </div>
 
       {/* === Tableau par étape === */}
-      <div className="report-table-wrap">
+      {/* Tableau (desktop / tablette ≥ 768px) */}
+      <div className="report-table-wrap report-desktop-only">
         <table className="report-table">
           <thead>
             <tr>
@@ -214,6 +215,72 @@ export function ReportView({ session }: Props): JSX.Element {
           </tbody>
         </table>
       </div>
+
+      {/* Cartes (mobile < 768px) */}
+      <ul className="report-cards report-mobile-only">
+        {report.steps.map((s) => {
+          const v = formatVariance(s.varianceMs);
+          const hasOvertime = s.overtimeMs > 1000;
+          return (
+            <li key={s.index} className={`report-card ${!s.reached ? 'unreached' : ''}`}>
+              <div className="report-card-head">
+                <span className="report-card-num">
+                  {String(s.index + 1).padStart(2, '0')}
+                </span>
+                <div className="report-card-title">{s.name}</div>
+                <StatusChip step={s} />
+              </div>
+
+              <div className="report-card-body">
+                <div className="report-card-cell">
+                  <span className="report-card-key">Prévu</span>
+                  <span className="report-card-val">
+                    {formatDurationVerbose(s.plannedDurationMs)}
+                  </span>
+                </div>
+                <div className="report-card-cell">
+                  <span className="report-card-key">Réel</span>
+                  <span className="report-card-val strong">
+                    {s.reached ? formatDurationVerbose(s.actualDurationMs) : '—'}
+                  </span>
+                </div>
+                {hasOvertime && (
+                  <div className="report-card-cell">
+                    <span className="report-card-key">Dépassement</span>
+                    <span className="report-card-val overtime positive">
+                      +{formatDurationVerbose(s.overtimeMs)}
+                    </span>
+                  </div>
+                )}
+                {s.pauseDurationMs > 0 && (
+                  <div className="report-card-cell">
+                    <span className="report-card-key">Pauses</span>
+                    <span className="report-card-val">
+                      {formatDurationVerbose(s.pauseDurationMs)}
+                      {s.pauseCount > 1 && ` (×${s.pauseCount})`}
+                    </span>
+                  </div>
+                )}
+                {s.reached && v.sign !== 'zero' && (
+                  <div className="report-card-cell">
+                    <span className="report-card-key">Variance</span>
+                    <span className={`report-card-val variance variance-${v.sign}`}>
+                      {v.text}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {s.reached && s.actualStartAt && (
+                <div className="report-card-footer">
+                  {formatTimeOfDay(s.actualStartAt)}
+                  {s.actualEndAt && ` → ${formatTimeOfDay(s.actualEndAt)}`}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
 
       <div className="report-actions">
         <button

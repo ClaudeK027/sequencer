@@ -1,6 +1,10 @@
 /* Reset minimal */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 100%; }
+html {
+  /* Empêche le double-tap zoom sur iOS qui crée un délai de 300ms */
+  touch-action: manipulation;
+}
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 14px;
@@ -9,6 +13,10 @@ body {
   color: #e6e6e7;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
+  /* iOS Safari : empêche le rebond élastique en haut/bas */
+  overscroll-behavior: none;
+  /* Empêche les zooms accidentels sur les inputs (iOS) */
+  -webkit-text-size-adjust: 100%;
 }
 button { font: inherit; color: inherit; cursor: pointer; background: none; border: none; }
 input {
