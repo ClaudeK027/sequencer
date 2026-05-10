@@ -216,9 +216,9 @@ export function LiveSessionPage({ sessionId }: Props): JSX.Element {
     return (
       <div className="page-live-session report-mode">
         <header className="live-page-header">
-          <button className="btn ghost" onClick={() => goBack('/live')}>
+          <button className="btn ghost back-btn" onClick={() => goBack('/live')}>
             <Icon name="arrow-left" />
-            Lives
+            <span className="back-label">Lives</span>
           </button>
           <div className="live-session-title">
             <span className="status-badge finished">Terminé</span>
@@ -238,9 +238,9 @@ export function LiveSessionPage({ sessionId }: Props): JSX.Element {
   return (
     <div className="page-live-session">
       <header className="live-page-header">
-        <button className="btn ghost" onClick={() => goBack('/live')}>
+        <button className="btn ghost back-btn" onClick={() => goBack('/live')}>
           <Icon name="arrow-left" />
-          Lives
+          <span className="back-label">Lives</span>
         </button>
         <div className="live-session-title">
           <span className="live-dot pulsing" data-active={isRunning} />

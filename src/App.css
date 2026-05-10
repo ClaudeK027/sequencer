@@ -122,6 +122,29 @@
 /* Cible tactile minimale + suppression du highlight bleu iOS */
 .btn { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
+/* Plein écran : caché sur mobile/tablette (l'API est peu fiable sur iOS Safari
+   et l'écran est déjà compact, le bouton n'apporte rien) */
+@media (max-width: 1023px) {
+  .btn[aria-label="Plein écran"] {
+    display: none;
+  }
+}
+
+/* Bouton retour : icône seule sur mobile (label tronqué visuellement
+   désagréable). On garde le label dès qu'on a la place (≥ 768px). */
+@media (max-width: 767px) {
+  .back-btn {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .back-btn .back-label {
+    display: none;
+  }
+}
+
 .btn.primary {
   background: var(--accent);
   border-color: var(--accent);

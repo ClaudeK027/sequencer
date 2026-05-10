@@ -42,9 +42,9 @@ export function LiveListPage(): JSX.Element {
   return (
     <div className="page-live-list">
       <header className="live-page-header">
-        <button className="btn ghost" onClick={() => goBack('/')}>
+        <button className="btn ghost back-btn" onClick={() => goBack('/')}>
           <Icon name="arrow-left" />
-          Retour
+          <span className="back-label">Retour</span>
         </button>
         <h1>Lives</h1>
         <div className="live-counter">
