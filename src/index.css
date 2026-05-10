@@ -1,0 +1,31 @@
+/* Reset minimal */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  background: #08090a;
+  color: #e6e6e7;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+button { font: inherit; color: inherit; cursor: pointer; background: none; border: none; }
+input {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
+  caret-color: #5e6ad2;
+}
+input[type="text"] { cursor: text; }
+ul { list-style: none; }
+::selection { background: rgba(94, 106, 210, 0.25); }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2a2c30; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3d42; }
