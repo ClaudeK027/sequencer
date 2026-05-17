@@ -230,15 +230,20 @@
 .editor-name {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .editor-name input {
   font-size: 16px;
   font-weight: 600;
   background: transparent;
   border: none;
-  width: 100%;
   color: var(--text);
+  flex: 1;
+  min-width: 0;
 }
+.editor-pdf-btn { flex-shrink: 0; }
 
 .step-form {
   display: flex;

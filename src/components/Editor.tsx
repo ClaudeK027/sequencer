@@ -5,6 +5,7 @@ import { AddStepForm } from './AddStepForm';
 import { StepItem } from './StepItem';
 import { useToast } from './Toast';
 import { renameSequence, reorderStep } from '../lib/sequenceActions';
+import { PdfExportModal } from './PdfExportModal';
 
 interface Props {
   sequence: Sequence;
@@ -20,6 +21,8 @@ export function Editor({ sequence, currentIndex, running, remaining }: Props): J
 
   const [name, setName] = useState(sequence.name);
   useEffect(() => setName(sequence.name), [sequence.name]);
+
+  const [pdfModalOpen, setPdfModalOpen] = useState(false);
 
   const dragSrcId = useRef<string | null>(null);
   const [dragStates, setDragStates] = useState<Record<string, DragState>>({});
@@ -94,6 +97,15 @@ export function Editor({ sequence, currentIndex, running, remaining }: Props): J
           placeholder="Nom de la séquence"
           aria-label="Nom de la séquence"
         />
+        <button
+          className="btn ghost icon editor-pdf-btn"
+          onClick={() => setPdfModalOpen(true)}
+          disabled={sequence.steps.length === 0}
+          title="Exporter en PDF"
+          aria-label="Exporter en PDF"
+        >
+          <Icon name="file-text" />
+        </button>
       </div>
       <AddStepForm sequence={sequence} />
       <div className="pane-body">
@@ -126,6 +138,12 @@ export function Editor({ sequence, currentIndex, running, remaining }: Props): J
           </ul>
         )}
       </div>
+
+      <PdfExportModal
+        open={pdfModalOpen}
+        onClose={() => setPdfModalOpen(false)}
+        sequence={sequence}
+      />
     </section>
   );
 }
